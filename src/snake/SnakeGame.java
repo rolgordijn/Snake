@@ -59,6 +59,19 @@ public enum Directions {
 		this.dir=dir;
 	}
 	
+	public void food(){
+		int x = (int) (Math.random()*(xsize-1));
+		int y = (int) (Math.random()*(ysize-1));
+		
+		if(display[x][y] == '*' || display[x][y] ==  '-'  ||  display[x][y] != '|' ){
+			display[x][y] = '+';
+			print();
+		}
+		else{
+			food(); 
+		}
+	}
+	
 	public void newSnakePosition(){
 		display[tail.x][tail.y] = ' ';
 		if(dir.equals(Directions.left)){
