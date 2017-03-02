@@ -1,23 +1,50 @@
+/**
+ * 
+ */
 package snake;
 
 import java.awt.Point;
 import java.io.Console;
 import java.io.IOException;
 
-public class SnakeGame {
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
+/**
+ * 
+ * @author Rian De Rous
+ *
+ */
+public class SnakeGame extends JFrame {
+
+	/**
+	 * 
+	 * @author Rian De Rous
+	 *
+	 */
 	public enum Directions {
 		up,right,down,left,
 	}
 
+	/**
+	 * 
+	 */
 	private int xsize;
 	private int ysize;
 	private Directions[][] pivot; //keeps track of the snake's direction in each point on the grid
 	private char[][] display;     //the "graphics" the wall is made of '-' and '|', food is a '+' and the snake is made of '*'; 
 	private Point head;
 	private Point tail;
+	private JTextArea ta;
 
-	public SnakeGame(int xsize,int ysize, Directions dir){
+	/**
+	 * 
+	 * @param xsize
+	 * @param ysize
+	 * @param dir
+	 */
+	public SnakeGame(int xsize,int ysize, Directions dir, JTextArea ta){
 		this.xsize = xsize;
 		this.ysize = ysize; 
 		pivot = new Directions[xsize][ysize];
@@ -25,10 +52,15 @@ public class SnakeGame {
 		head = new Point(xsize/2,ysize/2);
 		tail = new Point(xsize/2,ysize/2);
 		pivot[xsize/2][ysize/2] = dir; 
+		this.ta = ta;
 		init();
 		print();
 	}
-
+	
+	
+	/**
+	 * 
+	 */
 	public void init(){
 		for(int i=0;i<xsize;i++){
 			display[i][0] = '-';
@@ -42,15 +74,12 @@ public class SnakeGame {
 	}
 
 	public void print(){
-
-
-
-
+		
 		for(int i=0;i<ysize;i++){
 			for(int j=0;j<xsize;j++){
-				System.out.print(display[j][i]);
+				ta.append(String.valueOf(display[j][i]));
 			}  
-			System.out.println();
+			ta.append("\r\n");
 		}
 	}
 
@@ -72,6 +101,9 @@ public class SnakeGame {
 	}
 
 	
+	/**
+	 * 
+	 */
 	private void tailPosition(){
 		switch (pivot[tail.x][tail.y]) {
 		case left: tail.x--;
