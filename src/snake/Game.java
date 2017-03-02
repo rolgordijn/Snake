@@ -42,7 +42,7 @@ public class Game extends JFrame {
 
 
 
-		for(int i=0;i<10;i++){
+		for(int i=0;i<400;i++){
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -50,9 +50,15 @@ public class Game extends JFrame {
 				e.printStackTrace();
 			}
 			snakegame.newSnakePosition();
-			if(i%3==0){
-				snakegame.setDirection(Directions.up);
-				snakegame.food();
+			
+		    if(i%2==0) snakegame.food();
+			
+			if(i%15==0){
+				if(snakegame.HeadDirection()==Directions.left) snakegame.setDirection(Directions.down);
+				else if(snakegame.HeadDirection()==Directions.right) snakegame.setDirection(Directions.up);
+				else if(snakegame.HeadDirection()==Directions.down) snakegame.setDirection(Directions.right);
+				else if(snakegame.HeadDirection()==Directions.up) snakegame.setDirection(Directions.left);
+				
 			}
 
 		}

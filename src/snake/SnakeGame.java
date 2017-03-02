@@ -7,9 +7,12 @@ import java.awt.Point;
 import java.io.Console;
 import java.io.IOException;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 /**
  * 
@@ -80,27 +83,39 @@ public class SnakeGame extends JFrame {
 		
 	
 	}
+	
+	public Directions HeadDirection(){
+		return pivot[head.x][head.y];
+	}
 
 	public void print(){
 		ta.setText("");
 		for(int i=0;i<ysize;i++){
 			for(int j=0;j<xsize;j++){
 				ta.append(""+ display[j][i]);
-			    System.out.append(String.valueOf(display[j][i]));
+			
 			}  
 			ta.append("\r\n");
-			System.out.append("\r\n");
+
 		}
 	}
 
 	public void setDirection(Directions dir){
 		pivot[head.x][head.y] = dir;
+		System.out.println("direction is" + dir.name());
 	}
 
+	
+	public void testfood(){
+		display[head.x][head.y-2] = "+";
+		print();
+	}
+	
 	public void food(){
-		int x = (int) (Math.random()*(xsize-1));
-		int y = (int) (Math.random()*(ysize-1));
+    int x = (int) (Math.random()*(xsize-1));
+    int y = (int) (Math.random()*(ysize-1));
 
+		
 		if(display[x][y].equals(" ")){
 			display[x][y] = "+";
 			print();
@@ -115,6 +130,7 @@ public class SnakeGame extends JFrame {
 	 * 
 	 */
 	private void tailPosition(){
+
 		switch (pivot[tail.x][tail.y]) {
 		case left: tail.x--;
 		break;
@@ -138,7 +154,7 @@ public class SnakeGame extends JFrame {
 		break;
 		case up: head.y--; ;
 		break;
-		case down: head.y++  ;
+		case down: head.y++ ;
 		break;
 		default: break;
 		}
@@ -151,19 +167,31 @@ public class SnakeGame extends JFrame {
 		switch (display[head.x][head.y]) {
 		case "+": display[head.x][head.y]="*";
 		break;
-		case ("-"): System.out.println("gameOver!"); 
+		case " ": 	display[head.x][head.y]="*";
+					display[tail.x][tail.y]=" ";
+					tailPosition();
 		break;
-		case ("*"): System.out.println("gameOver!"); 
+		case ("-"): gameOver();
 		break;
-		case ("|"): System.out.println("gameOver!"); 
+		case ("*"): gameOver(); 
 		break;
-		default: tailPosition();
+		case ("|"):gameOver();
+		break;
+		default: 
 	    break;
 		}
 		print();
 	}
 
-
+   public void gameOver(){
+	   JFrame frame = new JFrame();
+	   frame.setAlwaysOnTop(true);
+	   frame.setVisible(false);
+	   JOptionPane.showMessageDialog(frame,
+			    "Game over!",
+			    "Game over!",
+			    JOptionPane.WARNING_MESSAGE);
+   }
 
 
 
