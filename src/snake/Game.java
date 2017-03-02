@@ -2,6 +2,7 @@ package snake;
 
 import javax.swing.*;
 import snake.SnakeGame.Directions;
+import java.awt.Font;
 
 public class Game extends JFrame {
 
@@ -11,6 +12,7 @@ public class Game extends JFrame {
 
 		jTextArea1.setBackground(new java.awt.Color(240, 240, 240));
 		jTextArea1.setColumns(20);
+		jTextArea1.setFont(new Font("Consolas", Font.PLAIN, 15));
 		jTextArea1.setRows(5);
 		jScrollPane1.setViewportView(jTextArea1);  
 
@@ -27,8 +29,6 @@ public class Game extends JFrame {
 
 		// stap 3 : allerlei initialisaties
 		game.setSize( 800, 800 );
-		game.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		game.setTitle( "Mooi hee !" );
 		// extra opdrachten --> zoeken via de index in klasse JFrame
 
 		game.setAlwaysOnTop(true); // venster steeds zichtbaar

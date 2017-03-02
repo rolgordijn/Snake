@@ -33,7 +33,7 @@ public class SnakeGame extends JFrame {
 	private int xsize;
 	private int ysize;
 	private Directions[][] pivot; //keeps track of the snake's direction in each point on the grid
-	private char[][] display;     //the "graphics" the wall is made of '-' and '|', food is a '+' and the snake is made of '*'; 
+	private String[][] display;     //the "graphics" the wall is made of '-' and '|', food is a '+' and the snake is made of '*'; 
 	private Point head;
 	private Point tail;
 	private JTextArea ta;
@@ -48,7 +48,7 @@ public class SnakeGame extends JFrame {
 		this.xsize = xsize;
 		this.ysize = ysize; 
 		pivot = new Directions[xsize][ysize];
-		display = new char[xsize][ysize];
+		display = new String[xsize][ysize];
 		head = new Point(xsize/2,ysize/2);
 		tail = new Point(xsize/2,ysize/2);
 		pivot[xsize/2][ysize/2] = dir; 
@@ -62,24 +62,34 @@ public class SnakeGame extends JFrame {
 	 * 
 	 */
 	public void init(){
+		for(int i=0;i<ysize;i++){
+			for(int j=0;j<xsize;j++){
+					display[j][i] = " "; 			
+			}  
+		}
+	
 		for(int i=0;i<xsize;i++){
-			display[i][0] = '-';
-			display[i][ysize-1] = '-';
+			display[i][0] = "-";
+			display[i][ysize-1] = "-";
 		}
 		for(int i=0;i<ysize;i++){
-			display[0][i] ='|';
-			display[xsize-1][i] = '|';
+			display[0][i] ="|";
+			display[xsize-1][i] = "|";
 		}
-		display[head.x][head.y]='*';
+		display[head.x][head.y]="*";
+		
+	
 	}
 
 	public void print(){
-		
+		ta.setText("");
 		for(int i=0;i<ysize;i++){
 			for(int j=0;j<xsize;j++){
-				ta.append(String.valueOf(display[j][i]));
+				ta.append(""+ display[j][i]);
+			    System.out.append(String.valueOf(display[j][i]));
 			}  
 			ta.append("\r\n");
+			System.out.append("\r\n");
 		}
 	}
 
@@ -91,8 +101,8 @@ public class SnakeGame extends JFrame {
 		int x = (int) (Math.random()*(xsize-1));
 		int y = (int) (Math.random()*(ysize-1));
 
-		if(display[x][y] == '*' || display[x][y] ==  '-'  ||  display[x][y] != '|' ){
-			display[x][y] = '+';
+		if(display[x][y].equals(" ")){
+			display[x][y] = "+";
 			print();
 		}
 		else{
@@ -139,13 +149,13 @@ public class SnakeGame extends JFrame {
 		//When the head moves to a position where a * | or - sign is, than you're game over. 
 
 		switch (display[head.x][head.y]) {
-		case '+': display[head.x][head.y]='*';
+		case "+": display[head.x][head.y]="*";
 		break;
-		case ('-'): System.out.println("gameOver!"); 
+		case ("-"): System.out.println("gameOver!"); 
 		break;
-		case ('*'): System.out.println("gameOver!"); 
+		case ("*"): System.out.println("gameOver!"); 
 		break;
-		case ('|'): System.out.println("gameOver!"); 
+		case ("|"): System.out.println("gameOver!"); 
 		break;
 		default: tailPosition();
 	    break;
