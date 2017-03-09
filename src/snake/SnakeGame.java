@@ -1,93 +1,171 @@
 package snake;
 
 import java.awt.Point;
-import java.io.Console;
-import java.io.IOException;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 public class SnakeGame {
-	
-public enum Directions {
-  up,right,down,left,
-}
-	
+
+	public enum Directions {
+		up, right, down, left,
+	}
+
 	private Directions dir;
 	private int xsize;
 	private int ysize;
-	private boolean[][] pivot;
-	private char[][] display;
+	private Directions[][] pivot;
+	private String[][] display;
 	private Point head;
 	private Point tail;
-	
-	public SnakeGame(int xsize,int ysize, Directions dir){
-	this.dir=dir;
-	this.xsize = xsize;
-	this.ysize = ysize; 
-    pivot = new boolean[xsize][ysize];
-    display = new char[xsize][ysize];
-    head = new Point(xsize/2,ysize/2);
-    tail = new Point(xsize/2,ysize/2);
-    init();
-    print();
-}
-	
-	public void init(){
-		for(int i=0;i<xsize;i++){
-			display[i][0] = '-';
-			display[i][ysize-1] = '-';
-		}
-		for(int i=0;i<ysize;i++){
-			display[0][i] ='|';
-			display[xsize-1][i] = '|';
-		}
-		display[head.x][head.y]='*';
-	}
-	
-	public void print(){
-		  
-		 
-		
-		
-	   for(int i=0;i<ysize;i++){
-		   for(int j=0;j<xsize;j++){
-			   System.out.print(display[j][i]);
-		   }  
-		   System.out.println();
-	   }
-	}
-	
-	public void setDirection(Directions dir){
-		this.dir=dir;
-	}
-	
-	public void newSnakePosition(){
-		display[tail.x][tail.y] = ' ';
-		if(dir.equals(Directions.left)){
-			head.x--;
-			tail.x--;
-		}
-		if(dir.equals(Directions.right)){
-			head.x++;
-			tail.x++;
-		}
-		if(dir.equals(Directions.up)){
-			head.y--;
-			tail.y--;
-		}
-		if(dir.equals(Directions.down)){
-			head.y++;
-			tail.y++;
-		}
-		
-		display[head.x][head.y] = '*';
+	private JTextArea ta;
+
+	/**
+	 * 
+	 * @param xsize
+	 * @param ysize
+	 * @param dir
+	 */
+	public SnakeGame(int xsize, int ysize, Directions dir, JTextArea ta) {
+		this.xsize = xsize;
+		this.ysize = ysize;
+		pivot = new Directions[xsize][ysize];
+		display = new String[xsize][ysize];
+		head = new Point(2, 2);
+		tail = new Point(2, 2);
+		this.ta = ta;
+		pivot[head.x][head.y] = dir;
+        this.dir = dir;
+		init();
 		print();
-		
-		
+	}
+
+	public void init() {
+
+		for (int i = 0; i < xsize; i++) {
+			for (int j = 0; j < ysize; j++) {
+				display[i][j] = " ";
+				pivot[i][j]=dir;
+			}
+		}
+		for (int i = 0; i < xsize; i++) {
+			display[i][0] = "-";
+			display[i][ysize - 1] = "-";
+		}
+		for (int i = 0; i < ysize; i++) {
+			display[0][i] = "|";
+			display[xsize - 1][i] = "|";
+		}
+		display[head.x][head.y] = "*";
+
+	}
+
+	public void print() {
+		ta.setText("");
+		for (int i = 0; i < ysize; i++) {
+			for (int j = 0; j < xsize; j++) {
+				ta.append(display[j][i]);
+
+			}
+			ta.append("\r\n");
+
+		}
+	}
+
+	public void setDirection(Directions dir) {
+		//pivot[head.x][head.y] = dir;
+		this.dir = dir;
 	}
 
 
+	public void food() {
+		int x = (int) (Math.random() * (xsize - 1));
+		int y = (int) (Math.random() * (ysize - 1));
+		if (display[x][y].equals(" ") || display[x][y].equals("+")) {
+			display[x][y] = "+";
+		} else
+			food();
+	}
 
+	public void newSnakePosition() {
+		System.out.println("" + head.x + " " + head.y);
+		System.out.println("" + pivot[head.x][head.y]);
+		pivot[head.x][head.y] = dir;
+		
+		switch (pivot[head.x][head.y]) {
+		case up:
+			head.y--;
+			break;
+		case down:
+			head.y++;
+			break;
+		case left:
+			head.x--;
+			break;
+		case right:
+			head.x++;
+			break;
+		default:
+			break;
+		}
+		pivot[head.x][head.y] = dir;
+		// when the snake eats food, the tail stays on the current location.
+		// Moving the tail is only required when the head doesn't eat food.
+		// When the head moves to a position where a * | or - sign is, than
+		// you're game over.
 
+		switch (display[head.x][head.y]) {
+		case "+":
+			display[head.x][head.y] = "*";
+			break;
+		case " ":
+			display[head.x][head.y] = "*";
+			display[tail.x][tail.y] = " ";
+			tailPosition();
+			break;
+		case ("-"):
+			gameOver();
+			break;
+		case ("*"):
+			gameOver();
+			break;
+		case ("|"):
+			gameOver();
+			break;
+		default:
+			break;
+		}
 
+		print();
 
+	}
+
+	public void tailPosition() {
+		switch (pivot[tail.x][tail.y]) {
+		case up:
+			tail.y--;
+			break;
+		case down:
+			tail.y++;
+			break;
+		case left:
+			tail.x--;
+			break;
+		case right:
+			tail.x++;
+			break;
+		default:
+			break;
+		}
+	}
+
+	public void gameOver() {
+		JFrame frame = new JFrame();
+		frame.setAlwaysOnTop(true);
+		frame.setVisible(false);
+		JOptionPane.showMessageDialog(frame, "Game over!", "Game over!", JOptionPane.WARNING_MESSAGE);
+		System.exit(0);
+
+	}
 
 }
