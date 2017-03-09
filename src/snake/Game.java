@@ -77,9 +77,9 @@ public class Game extends JFrame implements ActionListener {
 
 
 
-		for(int i=0;i<400000;i++){
+		for(;;){
 			try {
-				Thread.sleep(600);
+				Thread.sleep(100);
 		} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -14,6 +14,7 @@ public class SnakeGame {
 	private Directions dir;
 	private int xsize;
 	private int ysize;
+	private int score;
 	private Directions[][] pivot;
 	private String[][] display;
 	private Point head;
@@ -117,26 +118,24 @@ public class SnakeGame {
 		switch (display[head.x][head.y]) {
 		case "+":
 			display[head.x][head.y] = "*";
+			score+=10;
 			break;
 		case " ":
 			display[head.x][head.y] = "*";
 			display[tail.x][tail.y] = " ";
 			tailPosition();
 			break;
-		case ("-"):
-			gameOver();
-			break;
-		case ("*"):
-			gameOver();
-			break;
-		case ("|"):
-			gameOver();
-			break;
 		default:
+			gameOver();
 			break;
 		}
-
+		
+		display[1][1] = Integer.toString(score%10000/1000);
+		display[2][1] = Integer.toString(score%1000/100);
+		display[3][1] = Integer.toString(score%100/10);
+		display[4][1] = Integer.toString(score%10);
 		print();
+	
 
 	}
 
