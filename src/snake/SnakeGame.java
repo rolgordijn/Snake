@@ -2,7 +2,6 @@ package snake;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -12,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class SnakeGame extends JFrame implements ActionListener {
@@ -26,18 +24,19 @@ public class SnakeGame extends JFrame implements ActionListener {
 		up, right, down, left,
 	}
 
+	public enum snakeBlocks {
+		food, wall, snake, empty
+	}
+
 	private Directions dir;
 	private int xsize;
 	private int ysize;
 	private int score;
 	private Directions[][] pivot;
-	private String[][] display;
+	private snakeBlocks[][] display;
 	private Point head;
 	private Point tail;
-	private JTextArea ta;
-
-	private javax.swing.JScrollPane jScrollPane1;
-	private static javax.swing.JTextArea jTextArea1;
+	private boolean gameover;
 
 	private JButton buttonUp;
 	private JButton buttonDown;
@@ -82,16 +81,21 @@ public class SnakeGame extends JFrame implements ActionListener {
 
 		this.xsize = xsize;
 		this.ysize = ysize;
+		
 		pivot = new Directions[xsize][ysize];
-		display = new String[xsize][ysize];
-		head = new Point(xsize/2, ysize/3);
-		tail = new Point(xsize/2, ysize/3);
-		this.ta = jTextArea1;
-		pivot[head.x][head.y] = dir;
+		display = new snakeBlocks[xsize][ysize];
+		head = new Point(xsize / 2, ysize / 3);
+		tail = new Point(xsize / 2, ysize / 3);
+		
 		this.dir = dir;
+		
 		init();
 		print();
-
+	
+		
+		
+		
+		
 		// stap 3 : allerlei initialisaties
 		this.setSize(800, 800);
 		// extra opdrachten --> zoeken via de index in klasse JFrame
@@ -102,12 +106,12 @@ public class SnakeGame extends JFrame implements ActionListener {
 		this.setLocationRelativeTo(null); // zet in het midden v/h scherm
 
 		this.setVisible(true);
-		
+
 		play();
-	
+
 	}
-	
-	private void play(){
+
+	private void play() {
 		for (int i = 0; i > -1; i++) {
 			try {
 				Thread.sleep(400);
@@ -119,26 +123,41 @@ public class SnakeGame extends JFrame implements ActionListener {
 			newSnakePosition();
 			if (i % 20 == 0)
 				food();
+			if(gameover)init();
+
 		}
 	}
 
 	private void init() {
+		gameover = false;
+		score = 0;
 
+		head.x = xsize/2;
+		head.y = ysize/2;
+		tail.x = xsize/2;
+		tail.y = ysize/2;
+	
+
+		pivot[head.x][head.y] = dir;
+		
+		
 		for (int i = 0; i < xsize; i++) {
 			for (int j = 0; j < ysize; j++) {
-				display[i][j] = " ";
+				display[i][j] = snakeBlocks.empty;
 				pivot[i][j] = dir;
 			}
 		}
 		for (int i = 0; i < xsize; i++) {
-			display[i][0] = "-";
-			display[i][ysize - 1] = "-";
+			display[i][0] = snakeBlocks.wall;
+			display[i][ysize - 1] = snakeBlocks.wall;
+
 		}
 		for (int i = 0; i < ysize; i++) {
-			display[0][i] = "|";
-			display[xsize - 1][i] = "|";
+			display[0][i] = snakeBlocks.wall;
+			display[xsize - 1][i] = snakeBlocks.wall;
+
 		}
-		display[head.x][head.y] = "*";
+		display[head.x][head.y] = snakeBlocks.snake;
 
 	}
 
@@ -148,16 +167,13 @@ public class SnakeGame extends JFrame implements ActionListener {
 			for (int i = 0; i < xsize; i++) {
 				for (int j = 0; j < ysize; j++) {
 					switch (display[i][j]) {
-					case "-":
+					case wall:
 						g.setColor(Color.BLACK);
 						break;
-					case "|":
-						g.setColor(Color.BLACK);
-						break;
-					case "*":
+					case snake:
 						g.setColor(Color.blue);
 						break;
-					case "+":
+					case food:
 						g.setColor(Color.yellow);
 						break;
 					default:
@@ -171,25 +187,24 @@ public class SnakeGame extends JFrame implements ActionListener {
 						g.setColor(Color.black);
 						g.drawRect(40 * i + 20, 40 * j + 50, 40, 40);
 					}
-					
+
 					g.setColor(Color.white);
 					g.drawString((String.valueOf(score)), 75, 75);
 				}
-			
+
 			}
 		}
 	}
 
 	private void setDirection(Directions dir) {
-		// pivot[head.x][head.y] = dir;
 		this.dir = dir;
 	}
 
 	private void food() {
 		int x = (int) (Math.random() * (xsize - 1));
 		int y = (int) (Math.random() * (ysize - 1));
-		if (display[x][y].equals(" ") || display[x][y].equals("+")) {
-			display[x][y] = "+";
+		if (display[x][y] == snakeBlocks.empty || display[x][y] == snakeBlocks.food) {
+			display[x][y] = snakeBlocks.food;
 		} else
 			food();
 	}
@@ -213,6 +228,7 @@ public class SnakeGame extends JFrame implements ActionListener {
 		default:
 			break;
 		}
+		System.out.println(""+head.x+" "+head.y);
 		pivot[head.x][head.y] = dir;
 		// when the snake eats food, the tail stays on the current location.
 		// Moving the tail is only required when the head doesn't eat food.
@@ -220,13 +236,13 @@ public class SnakeGame extends JFrame implements ActionListener {
 		// you're game over.
 
 		switch (display[head.x][head.y]) {
-		case "+":
-			display[head.x][head.y] = "*";
+		case food:
+			display[head.x][head.y] = snakeBlocks.snake;
 			score += 10;
 			break;
-		case " ":
-			display[head.x][head.y] = "*";
-			display[tail.x][tail.y] = " ";
+		case empty:
+			display[head.x][head.y] = snakeBlocks.snake;
+			display[tail.x][tail.y] = snakeBlocks.empty;
 			tailPosition();
 			break;
 		default:
@@ -234,10 +250,6 @@ public class SnakeGame extends JFrame implements ActionListener {
 			break;
 		}
 
-		display[1][1] = Integer.toString(score % 10000 / 1000);
-		display[2][1] = Integer.toString(score % 1000 / 100);
-		display[3][1] = Integer.toString(score % 100 / 10);
-		display[4][1] = Integer.toString(score % 10);
 		print();
 
 	}
@@ -266,8 +278,7 @@ public class SnakeGame extends JFrame implements ActionListener {
 		frame.setAlwaysOnTop(true);
 		frame.setVisible(false);
 		JOptionPane.showMessageDialog(frame, "Game over!", "Game over!", JOptionPane.WARNING_MESSAGE);
-		System.exit(0);
-
+		gameover=true;
 	}
 
 	public void actionPerformed(ActionEvent e) {
